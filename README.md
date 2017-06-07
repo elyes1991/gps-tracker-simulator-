@@ -1,1 +1,1 @@
-# gps-tracker-simulator-
+# GPS trackers simulator application
