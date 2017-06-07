@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>GPS Trackers Simulator</title>
+        <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+        
+        <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    </head>
+ 
+    <body >
+    <header>
+    <div class="navbar navbar-inverse" >
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">
+                    <span > GPS Trackers Simulator</span>
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="#" >Login</a></li>
+                <li > <a href="#" >UserName</a></li>
+                <li ><a href="#" >Logout</a></li>
+            </ul>   
+    </div>
+</header>
+
+<div class="container">
+  <div class="row">
+        <div class="col-md-6">
+          <div>
+              <!-- Table -->
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Location Name</th>
+                    <th>Longitude</th>
+                    <th>Latitude</th>
+                    <th>Datetime</th>
+                  </tr>
+                </thead>
+                <tbody  id="tracking-history">
+  
+                </tbody> 
+              </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default col-md-12">
+            <div class="panel-body" id="map" style="width: 500px; height: 400px;"></div>
+          </div>
+        </div>
+  </div>
+</div>
+              <!-- Latest compiled and minified JavaScript -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+          <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+      <script type="text/javascript">
+        var map = new google.maps.Map(document.getElementById('map'), {
+              zoom: 12,
+              // center: new google.maps.LatLng(-33.92, 151.25),
+              center: new google.maps.LatLng(36.8857, -76.2599),
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            var infowindow = new google.maps.InfoWindow();
+            var marker, i;
+            var socket = io.connect('http://127.0.0.1:1332');
+            socket.on('position', function (data) {
+          var temp = "<tr>"+
+          "<td>"+data.name+"</td>"
+          +"<td>"+ data.position.longitude +"</td>"
+          +"<td>"+ data.position.latitude +"</td>"
+          +"<td>"+data.date+"</td>"
+          +"</tr>";
+        $("#tracking-history").append(temp);
+              marker = new google.maps.Marker({
+                position: new google.maps.LatLng(data.position.latitude, data.position.longitude),
+                map: map
+              });
+
+              google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                  infowindow.setContent(data.name, data.name);
+                  infowindow.open(map, marker);
+                }
+              })(marker, i));
+
+         });
+    </script>
+    </body>
+</html>
